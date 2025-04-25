@@ -2,6 +2,27 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
+# Password protection
+def check_password():
+    def password_entered():
+        if st.session_state["password"] == "your_secret_password":
+            st.session_state["password_correct"] = True
+        else:
+            st.session_state["password_correct"] = False
+
+    if "password_correct" not in st.session_state:
+        st.text_input("Enter password:", type="password", on_change=password_entered, key="password")
+        return False
+    elif not st.session_state["password_correct"]:
+        st.text_input("Enter password:", type="password", on_change=password_entered, key="password")
+        st.error("❌ Incorrect password.")
+        return False
+    else:
+        return True
+
+if not check_password():
+    st.stop()
+
 # Load data
 df = pd.read_csv("nfl_stats.csv")
 df["game_date"] = pd.to_datetime(df["game_date"])
